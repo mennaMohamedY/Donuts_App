@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.view.model.compose)
     //compose icons
     implementation(libs.material.icons.extended)
+    //navigation component compose
+    implementation(libs.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
