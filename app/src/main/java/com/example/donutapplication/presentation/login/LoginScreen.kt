@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HideSource
@@ -89,6 +91,9 @@ fun LoginScreen(){
                             vm.passwordError.value,
                             onSignInClick = {
                                 vm.signIn()
+                            },
+                            onSignInViaMetaClick = {methodID->
+
                             })
                     }
                 }
@@ -151,13 +156,16 @@ fun SignInContent(){
 @Composable
 fun SignUpContent(email: String,onValueChanged:(String)->Unit,emailErrorMsg: String?,
                   password:String,onPassValueChanged:(String)->Unit,passErrorMsg: String?,
-                  onSignInClick: () -> Unit){
+                  onSignInClick: () -> Unit,onSignInViaMetaClick:(Int)->Unit){
     Column(Modifier.padding(26.dp,12.dp,26.dp,0.dp)
         ) {
 
         RegisterTextField(email,onValueChanged,emailErrorMsg)
         RegisterPassTextField(password,onPassValueChanged,passErrorMsg)
         SignInBtn(onSignInClick = onSignInClick)
+        Image(painter = painterResource(R.drawable.line_seperator), contentDescription = "line seperator",
+            modifier = Modifier.fillMaxWidth().padding(vertical = 19.dp, horizontal = 20.dp), contentScale = ContentScale.FillWidth )
+        SignInViaMetaSection(onSignInViaMetaClick)
     }
 }
 
@@ -228,7 +236,7 @@ fun RegisterPassTextField(email: String,onValueChanged:(String)-> Unit,errorMsg:
                 })
         },
 
-        modifier = Modifier.fillMaxWidth().padding(0.dp,22.dp,0.dp,0.dp))
+        modifier = Modifier.fillMaxWidth().padding(0.dp,6.dp,0.dp,0.dp))
 }
 
 @Composable
@@ -237,8 +245,40 @@ fun SignInBtn(onSignInClick:()->Unit){
         containerColor = colorResource(R.color.primary),
         contentColor = Color.White , disabledContainerColor = colorResource(R.color.primary_disabled),
         disabledContentColor = Color.LightGray),
-        modifier = Modifier.fillMaxWidth().padding(vertical =86.dp , horizontal = 45.dp)) {
-
+        modifier = Modifier.fillMaxWidth().padding(vertical =26.dp , horizontal = 45.dp)) {
         Text("Sign In", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+
+@Composable
+fun SignInViaMetaSection(onSignInClick:(Int)->Unit){
+    Row(Modifier.fillMaxWidth().padding(vertical = 39.dp, horizontal = 20.dp)) {
+        listOf(R.drawable.facebook_icon,R.drawable.google_icon).forEachIndexed { index, iconID ->
+            SignInWithFBOrGoogleBtn(iconID,index, modifier = Modifier.weight(0.50f)) { loginMethodID->
+                onSignInClick(loginMethodID)
+            }
+        }
+    }
+
+}
+@Composable
+fun SignInWithFBOrGoogleBtn(icon:Int,loginMethodID:Int,modifier: Modifier,onClick:(Int)->Unit){
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.padding(4.dp)) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.clip(CircleShape).size(44.dp).border(
+                1.dp,colorResource(R.color.light_gray),
+                shape = CircleShape).clickable{
+                onClick(loginMethodID)
+            }) {
+
+            val content = "Login via" + if(loginMethodID ==0) "facebook" else "google"
+            Image(painterResource(icon), contentDescription = content, Modifier.padding(2.dp).size(24.dp),
+            )
+        }
     }
 }

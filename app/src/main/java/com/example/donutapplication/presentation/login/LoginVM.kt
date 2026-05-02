@@ -58,4 +58,11 @@ class LoginVM : ViewModel() {
         validatePassword()
     }
 
+    fun signInViaMeta(mthodID:Int){
+        if (mthodID == 0){
+
+        }else{
+
+        }
+    }
 }
