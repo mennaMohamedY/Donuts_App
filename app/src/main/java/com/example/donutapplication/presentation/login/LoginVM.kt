@@ -1,12 +1,8 @@
 package com.example.donutapplication.presentation.login
 
 import android.util.Patterns
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class LoginVM : ViewModel() {
@@ -31,7 +27,7 @@ class LoginVM : ViewModel() {
     }
 
 
-    private fun validateEmail() {
+    private fun validateEmail() : Boolean{
         val value = _email.value
          _emailError.value =  when {
             value.isEmpty() -> "Email cannot be empty"
@@ -39,9 +35,11 @@ class LoginVM : ViewModel() {
             else -> null
         }
 
+        return _emailError.value == null
+
     }
 
-    private fun validatePassword(){
+    private fun validatePassword(): Boolean{
         val value = _password.value
         _passwordError.value = when {
             value.isEmpty()   -> "Password cannot be empty"
@@ -51,18 +49,20 @@ class LoginVM : ViewModel() {
             !value.any { !it.isLetterOrDigit() } -> "Must contain at least one special character"
             else -> null
         }
+        return _passwordError.value == null
     }
 
-    fun signIn(){
-        validateEmail()
-        validatePassword()
+    fun signIn(): Boolean{
+        val validMail = validateEmail()
+        val validPass = validatePassword()
+        return validMail && validPass
     }
 
     fun signInViaMeta(mthodID:Int){
         if (mthodID == 0){
-
+            //todo
         }else{
-
+            //todo
         }
     }
 }

@@ -10,4 +10,6 @@
     <color name="primary">#FF9666</color>
     <color name="primary_disabled">#80FF9666</color>
     <color name="light_gray">#d3d2d2</color>
+    <color name="home_bg_color">#fff6f2</color>
+    <color name="price_color">#174C4F</color>
 </resources>

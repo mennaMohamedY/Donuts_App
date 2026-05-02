@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.donutapplication.presentation.home.HomeScreen
 import com.example.donutapplication.presentation.login.LoginScreen
 import com.example.donutapplication.ui.theme.DonutApplicationTheme
 
@@ -30,7 +31,14 @@ fun SetNavGraph(){
 
     NavHost(navController,"LoginScreen") {
         composable("LoginScreen") {
-            LoginScreen()
+
+            LoginScreen(navigateToMain = {
+                navController.navigate("LoginScreen/homeScreen")
+            })
+        }
+
+        composable("LoginScreen/homeScreen") {
+            HomeScreen()
         }
     }
 }
