@@ -19,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
 import com.example.donutapplication.data.bottomNavList
 

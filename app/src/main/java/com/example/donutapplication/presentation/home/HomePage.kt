@@ -1,6 +1,5 @@
 package com.example.donutapplication.presentation.home
 
-import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,12 +41,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.donutapplication.App
+import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
 import com.example.donutapplication.data.CategoryDummyData
 import com.example.donutapplication.data.categoriesDummyList
 import com.example.donutapplication.data.featuredDummyList
-import com.example.donutapplication.presentation.details.DetailsActivity
 import com.example.donutapplication.presentation.login.TabDesign
 import kotlinx.coroutines.launch
 
@@ -140,7 +138,7 @@ fun CardWithImage(icon: ImageVector,iconCol:Int,onItemClick:()->Unit){
 }
 
 @Composable
-fun FeaturedCard(id:Int,donutNam:String,donutPrice:String,donutIcon:Int,modifier: Modifier,onItemClick: () -> Unit){
+fun FeaturedCard(id:Int, donutNam:String, donutPrice: Double, donutIcon:Int, modifier: Modifier, onItemClick: () -> Unit){
 
     Card(shape = RoundedCornerShape(24.dp), modifier = modifier.
     padding(if (id ==0) 0.dp else 8.dp,0.dp,if (id ==0) 8.dp else 0.dp,0.dp).clickable{
@@ -154,10 +152,8 @@ fun FeaturedCard(id:Int,donutNam:String,donutPrice:String,donutIcon:Int,modifier
 
             Text(donutNam, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colorResource(R.color.price_color), maxLines = 1)
 
-            Text(donutPrice, fontSize = 10.sp, fontWeight = FontWeight.Medium, color = colorResource(R.color.price_color))
+            Text("$ $donutPrice", fontSize = 10.sp, fontWeight = FontWeight.Medium, color = colorResource(R.color.price_color))
         }
-
-
     }
 }
 
