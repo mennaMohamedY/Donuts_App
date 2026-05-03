@@ -30,14 +30,15 @@ fun SetNavGraph(){
     val navController = rememberNavController()
 
     NavHost(navController,"LoginScreen") {
+//        composable("LoginScreen") {
+//
+//            LoginScreen(navigateToMain = {
+//                navController.navigate("LoginScreen/homeScreen")
+//            })
+//        }
+
+        //LoginScreen/homeScreen
         composable("LoginScreen") {
-
-            LoginScreen(navigateToMain = {
-                navController.navigate("LoginScreen/homeScreen")
-            })
-        }
-
-        composable("LoginScreen/homeScreen") {
             HomeScreen()
         }
     }

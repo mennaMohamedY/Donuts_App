@@ -1,7 +1,9 @@
 package com.example.donutapplication.presentation.home
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,14 +28,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -43,12 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.donutapplication.App
 import com.example.donutapplication.R
 import com.example.donutapplication.data.CategoryDummyData
 import com.example.donutapplication.data.categoriesDummyList
 import com.example.donutapplication.data.featuredDummyList
+import com.example.donutapplication.presentation.details.DetailsActivity
 import com.example.donutapplication.presentation.login.TabDesign
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,7 +67,14 @@ fun HomePage(modifier: Modifier){
         Titles("Featured")
         Row(Modifier.padding(vertical = 4.dp, horizontal = 24.dp)) {
             featuredDummyList.forEachIndexed { index, data ->
-                FeaturedCard(index,data.donutName,data.donutPrice, data.donutIcon,Modifier.weight(0.5f))
+                FeaturedCard(index,data.donutName,data.donutPrice, data.donutIcon,Modifier.weight(0.5f)){
+                    val context = App.getApplicationContext()
+                    val intent = Intent(context, DetailsActivity::class.java)
+                    intent.putExtra("categoryID",3)
+                    intent.putExtra("itemID",index)
+                    context.startActivity(intent)
+
+                }
             }
         }
         Titles("Categories")
@@ -111,22 +116,33 @@ fun LocationAndCart(){
                 }
             }
         }
-        Box(contentAlignment = Alignment.CenterEnd){
-            Card(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
-                colors = CardDefaults.cardColors(Color.White)) {
-                Icon(imageVector = Icons.Default.AddShoppingCart,"shopping cart",
-                    tint = colorResource(R.color.primary), modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp))
+        CardWithImage(Icons.Default.AddShoppingCart,R.color.primary){
 
-            }
+        }
+
+    }
+}
+@Composable
+fun CardWithImage(icon: ImageVector,iconCol:Int,onItemClick:()->Unit){
+    Box(contentAlignment = Alignment.CenterEnd){
+        Card(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp).clickable{
+            onItemClick()
+        },shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
+            colors = CardDefaults.cardColors(Color.White)) {
+            Icon(imageVector = icon,"shopping cart",
+                tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp))
+
         }
     }
 }
 
 @Composable
-fun FeaturedCard(id:Int,donutNam:String,donutPrice:String,donutIcon:Int,modifier: Modifier){
+fun FeaturedCard(id:Int,donutNam:String,donutPrice:String,donutIcon:Int,modifier: Modifier,onItemClick: () -> Unit){
 
     Card(shape = RoundedCornerShape(24.dp), modifier = modifier.
-    padding(if (id ==0) 0.dp else 8.dp,0.dp,if (id ==0) 8.dp else 0.dp,0.dp),
+    padding(if (id ==0) 0.dp else 8.dp,0.dp,if (id ==0) 8.dp else 0.dp,0.dp).clickable{
+        onItemClick()
+    },
         colors = CardDefaults.cardColors(Color.White)) {
 
         Column(Modifier.padding(horizontal = 5.dp, vertical = 5.dp)) {

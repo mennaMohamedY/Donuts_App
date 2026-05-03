@@ -9,12 +9,12 @@ data class CategoryDummyData(
 
 val drinksDummyDataList : List<CategoryDummyData> = listOf(
     CategoryDummyData(itemImag = R.drawable.tea_img1, itemName = "Original Coffee"),
-    CategoryDummyData(itemImag = R.drawable.tea_img2, itemName = "Tea"),
+    CategoryDummyData(itemImag = R.drawable.cofee_img1, itemName = "Tea"),
     CategoryDummyData(itemImag = R.drawable.tea_img3, itemName = "Espresso"),
 )
 
 val icedDrinksDummyDataList :List<CategoryDummyData> = listOf(
-    CategoryDummyData(itemImag = R.drawable.cofee_img1, itemName = "Iced Latte"),
+    CategoryDummyData(itemImag = R.drawable.tea_img2, itemName = "Iced Latte"),
     CategoryDummyData(itemImag = R.drawable.cofee_img2, itemName = "Iced Macchiato"),
     CategoryDummyData(itemImag = R.drawable.cofee_img3, itemName = "Iced Cofee with Milk"),
 )
