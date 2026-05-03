@@ -1,6 +1,7 @@
 package com.example.donutapplication.presentation.home
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +60,7 @@ fun HomePage(modifier: Modifier){
     )
     val scrollState = rememberScrollState()
     val coroutineScop = rememberCoroutineScope ()
+    val context = LocalContext.current
     Column(modifier.fillMaxSize().verticalScroll(scrollState).background(colorResource(R.color.home_bg_color))) {
         LocationAndCart()
         Row(Modifier.padding(vertical = 12.dp, horizontal = 24.dp)) {
@@ -66,14 +69,11 @@ fun HomePage(modifier: Modifier){
         }
         Titles("Featured")
         Row(Modifier.padding(vertical = 4.dp, horizontal = 24.dp)) {
-            featuredDummyList.forEachIndexed { index, data ->
-                FeaturedCard(index,data.donutName,data.donutPrice, data.donutIcon,Modifier.weight(0.5f)){
-                    val context = App.getApplicationContext()
-                    val intent = Intent(context, DetailsActivity::class.java)
-                    intent.putExtra("categoryID",3)
-                    intent.putExtra("itemID",index)
-                    context.startActivity(intent)
 
+            featuredDummyList.forEachIndexed { index, data ->
+                FeaturedCard(index,data.itemName,data.itemPrice, data.itemImag,Modifier.weight(0.5f)){
+                    Log.e("categoryDetails","2-category id is 3, item id is $index")
+                    vm.navigateToDetailsScreen(context, categoryID = 3, itemID = index)
                 }
             }
         }
@@ -93,7 +93,10 @@ fun HomePage(modifier: Modifier){
         HorizontalPager(state = selectedCategoryTabState) { page ->
             val categoryItemsList = vm.getListFromID(page)
             when (page) {
-                0, 1,2 -> {SelectedCategoryPage(categoryItemsList)}
+                0, 1,2 -> {SelectedCategoryPage(categoryItemsList){itemId->
+                    Log.e("categoryDetails","1-category id is $page, item id is $itemId")
+                    vm.navigateToDetailsScreen(context, categoryID = page, itemID = itemId)
+                }}
             }
         }
     }
@@ -165,13 +168,15 @@ fun Titles(title:String){
 }
 
 @Composable
-fun SelectedCategoryPage(categoryItems:List<CategoryDummyData>){
+fun SelectedCategoryPage(categoryItems:List<CategoryDummyData>,onItemClick: (Int) -> Unit){
 
     Column  {
         categoryItems.forEachIndexed { index, categoryItem ->
-            Row(Modifier.padding(vertical = 6.dp, horizontal = 24.dp)) {
+            Row(Modifier.padding(vertical = 6.dp, horizontal = 24.dp).clickable{
+                onItemClick(index)
+            }) {
                 Image(painterResource(categoryItem.itemImag), contentDescription = "categoryItemImage",
-                    Modifier.size(68.dp), contentScale = ContentScale.FillBounds)
+                    Modifier.size(68.dp), contentScale = ContentScale.Fit)
                 Text(categoryItem.itemName, color = colorResource(R.color.price_color), fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 26.dp, vertical = 4.dp) )
             }
