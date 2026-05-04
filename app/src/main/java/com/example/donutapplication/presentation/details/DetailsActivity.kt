@@ -15,25 +15,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardControlKey
-import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,10 +50,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
 import com.example.donutapplication.data.CategoryDummyData
 import com.example.donutapplication.presentation.details.ui.theme.DonutApplicationTheme
 import com.example.donutapplication.presentation.home.CardWithImage
+import kotlinx.coroutines.delay
 
 class DetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,15 +64,18 @@ class DetailsActivity : ComponentActivity() {
 
         val categoryID : Int = intent.getIntExtra("categoryID",0)
         val itemID : Int = intent.getIntExtra("itemID",0)
-
         setContent {
             val vm : DetailsVM = viewModel()
             val context = LocalContext.current
             vm.getDataByID(categoryID,itemID)
             val item = vm.itemDetails.value
+            val scrollState = rememberScrollState()
+
             DonutApplicationTheme {
-                Column(Modifier.fillMaxSize().background(colorResource(R.color.home_bg_color))
-                    .padding(0.dp,24.dp,0.dp,10.dp)) {
+                Column(Modifier.fillMaxSize()
+                    .background(colorResource(R.color.home_bg_color))
+                    .padding(0.dp,24.dp,0.dp,10.dp)
+                    .verticalScroll(scrollState)) {
                     Box(Modifier.padding(14.dp,0.dp,14.dp,0.dp)){
                         CardWithImage(Icons.Default.ArrowBackIosNew,R.color.black){
                             (context as? Activity)?.finish()
@@ -88,9 +97,11 @@ class DetailsActivity : ComponentActivity() {
 
 
 @Composable
-fun ItemDetailsSection(item: CategoryDummyData?){
+fun ItemDetailsSection(item: CategoryDummyData?,mainVM: MainVM=viewModel()){
     var itemCount by remember { mutableIntStateOf(1) }
     val itemPrice = item?.itemPrice ?: 1.0
+
+    var showSnackbar by remember { mutableStateOf(false) }
 
     Column() {
         Card(shape = RoundedCornerShape(30.dp,30.dp,0.dp,0.dp),
@@ -128,9 +139,17 @@ fun ItemDetailsSection(item: CategoryDummyData?){
                             })
 
                     }
+                    if (showSnackbar){
+                        ShowStatusSnackbar()
+                        LaunchedEffect(showSnackbar) {
+                            delay(1000)
+                            showSnackbar = false
+                        }
+                    }
                     AddToCartBtn(){
+                        mainVM.addToCart()
 
-
+                        showSnackbar = true
                     }
                 }
             }
@@ -172,4 +191,15 @@ fun AddToCartBtn(onAddToBagClick:()->Unit){
             .padding(vertical = 26.dp, horizontal = 24.dp)) {
         Text("Add To Cart", fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
+}
+
+@Composable
+fun ShowStatusSnackbar(){
+    Snackbar(shape = RoundedCornerShape(24.dp), contentColor = colorResource(R.color.price_color), containerColor = Color.White) {
+        Row() {
+            Text("Item Added To Cart Successfully")
+            Icon(Icons.Default.CheckCircle, contentDescription = "added successfully", tint = colorResource(R.color.primary))
+        }
+    }
+
 }

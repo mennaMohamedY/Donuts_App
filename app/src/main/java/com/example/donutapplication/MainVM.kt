@@ -1,5 +1,6 @@
 package com.example.donutapplication
 
+import android.util.Log
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,10 +10,15 @@ import androidx.lifecycle.ViewModel
 class MainVM  : ViewModel(){
 
     private var _itemsInCart by mutableIntStateOf(0)
-    val itemsInCart = derivedStateOf { _itemsInCart }
 
     fun addToCart(){
         _itemsInCart +=1
+        getCartItems()
+        Log.e("addToCart","additem to cart ${_itemsInCart}")
+    }
+
+    fun getCartItems(): Int{
+        return _itemsInCart
     }
 
 

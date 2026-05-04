@@ -23,11 +23,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
@@ -50,9 +55,9 @@ import com.example.donutapplication.presentation.login.TabDesign
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomePage(modifier: Modifier){
-
-    val vm : HomeVM = viewModel()
+fun HomePage(modifier: Modifier, vm : HomeVM = viewModel(),mainVM: MainVM = viewModel() ){
+    val itemsInCart = mainVM.getCartItems()
+    Log.e("addToCart","home page get items in cart ${itemsInCart}")
     val selectedCategoryTabState = rememberPagerState(
         pageCount = {categoriesDummyList.size}
     )
@@ -60,7 +65,7 @@ fun HomePage(modifier: Modifier){
     val coroutineScop = rememberCoroutineScope ()
     val context = LocalContext.current
     Column(modifier.fillMaxSize().verticalScroll(scrollState).background(colorResource(R.color.home_bg_color))) {
-        LocationAndCart()
+        LocationAndCart(itemsInCart)
         Row(Modifier.padding(vertical = 12.dp, horizontal = 24.dp)) {
             Text("NEW " , fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Text("Pumpkin spice donut!" , fontSize = 14.sp)
@@ -101,7 +106,7 @@ fun HomePage(modifier: Modifier){
 }
 
 @Composable
-fun LocationAndCart(){
+fun LocationAndCart(itemsInCart: Int){
     Row(Modifier.padding(24.dp,12.dp,24.dp,10.dp).fillMaxWidth()) {
 
         Box(Modifier.padding(vertical = 12.dp, horizontal = 3.dp).weight(1f),
@@ -117,22 +122,30 @@ fun LocationAndCart(){
                 }
             }
         }
-        CardWithImage(Icons.Default.AddShoppingCart,R.color.primary){
-
+        CardWithImage(Icons.Default.AddShoppingCart  ,R.color.primary,true, itemsInCart){
+            //navigate to cart page
         }
 
     }
 }
 @Composable
-fun CardWithImage(icon: ImageVector,iconCol:Int,onItemClick:()->Unit){
+fun CardWithImage(icon: ImageVector, iconCol:Int, showNotificationBage: Boolean= false,itemsInCart:Int=0, onItemClick:()->Unit){
     Box(contentAlignment = Alignment.CenterEnd){
         Card(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp).clickable{
             onItemClick()
         },shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
             colors = CardDefaults.cardColors(Color.White)) {
-            Icon(imageVector = icon,"shopping cart",
-                tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp))
+            BadgedBox(
+                badge = {
+                    if (showNotificationBage){
+                        Text("${itemsInCart}")
+                    }
+                }
+            ) {
+                Icon(imageVector = icon,"shopping cart",
+                    tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp))
 
+            }
         }
     }
 }
