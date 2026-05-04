@@ -1,4 +1,4 @@
-package com.example.donutapplication.data
+package com.example.donutapplication.presentation.dummy_data
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CardGiftcard

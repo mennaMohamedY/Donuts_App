@@ -6,18 +6,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.donutapplication.data.CategoryDummyData
-import com.example.donutapplication.data.donutsDummyDataList
-import com.example.donutapplication.data.drinksDummyDataList
-import com.example.donutapplication.data.featuredDummyList
-import com.example.donutapplication.data.icedDrinksDummyDataList
+import com.example.donutapplication.presentation.common.SharedPrefCart
+import com.example.donutapplication.presentation.dummy_data.CategoryDummyData
+import com.example.donutapplication.presentation.dummy_data.donutsDummyDataList
+import com.example.donutapplication.presentation.dummy_data.drinksDummyDataList
+import com.example.donutapplication.presentation.dummy_data.featuredDummyList
+import com.example.donutapplication.presentation.dummy_data.icedDrinksDummyDataList
 
-class DetailsVM : ViewModel() {
+class DetailsVM(
+    private val sharedPrefCart: SharedPrefCart
+) : ViewModel() {
 
     private var _itemDetails by mutableStateOf<CategoryDummyData?>(null)
     val itemDetails = derivedStateOf { _itemDetails }
 
+    var itemsInCart: Int
+        get() = sharedPrefCart.cartItems
+        set(value) {
+            sharedPrefCart.cartItems = value
+        }
 
+    fun addToCart(){
+        val holder = itemsInCart
+        itemsInCart = holder+1
+    }
 
     fun getDataByID(categoryID:Int,itemID:Int) {
          val selectedCategoryList =  when(categoryID){

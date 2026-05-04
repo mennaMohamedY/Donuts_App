@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(navigateToMain:()->Unit){
 
-    val vm : LoginVM = viewModel()
     val selectedTabState = rememberPagerState(
         pageCount = {2}
     )
@@ -58,8 +57,8 @@ fun LoginScreen(navigateToMain:()->Unit){
 
                 HorizontalPager(state = selectedTabState) { page ->
                     when (page) {
-                        0 -> SignInContent()
-                        1 -> SignUpPage(vm) {navigateToMain() }
+                        0 -> SignInPage  {navigateToMain()}
+                        1 -> SignUpPage  {navigateToMain()}
                     }
                 }
             }
@@ -112,10 +111,3 @@ fun TabDesign(modifier: Modifier, isSelected: Boolean, tabText:String,tabID:Int,
         )
     }
 }
-@Composable
-fun SignInContent(){
-    Box(Modifier.padding(12.dp)) {
-        Text("helloo")
-    }
-}
-

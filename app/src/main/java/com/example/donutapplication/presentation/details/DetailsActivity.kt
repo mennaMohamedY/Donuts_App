@@ -37,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,9 +49,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
-import com.example.donutapplication.data.CategoryDummyData
+import com.example.donutapplication.presentation.common.CartDetailsVMFactory
+import com.example.donutapplication.presentation.dummy_data.CategoryDummyData
 import com.example.donutapplication.presentation.details.ui.theme.DonutApplicationTheme
 import com.example.donutapplication.presentation.home.CardWithImage
 import kotlinx.coroutines.delay
@@ -65,7 +64,10 @@ class DetailsActivity : ComponentActivity() {
         val categoryID : Int = intent.getIntExtra("categoryID",0)
         val itemID : Int = intent.getIntExtra("itemID",0)
         setContent {
-            val vm : DetailsVM = viewModel()
+            val vm: DetailsVM = viewModel(
+                factory = CartDetailsVMFactory(this)
+            )
+
             val context = LocalContext.current
             vm.getDataByID(categoryID,itemID)
             val item = vm.itemDetails.value
@@ -87,7 +89,7 @@ class DetailsActivity : ComponentActivity() {
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.size(335.dp).padding(horizontal = 34.dp, vertical = 2.dp)
                         )
-                    ItemDetailsSection(item)
+                    ItemDetailsSection(item,vm)
 
                 }
             }
@@ -97,13 +99,14 @@ class DetailsActivity : ComponentActivity() {
 
 
 @Composable
-fun ItemDetailsSection(item: CategoryDummyData?,mainVM: MainVM=viewModel()){
+fun ItemDetailsSection(item: CategoryDummyData?,vm: DetailsVM){
+
     var itemCount by remember { mutableIntStateOf(1) }
     val itemPrice = item?.itemPrice ?: 1.0
 
     var showSnackbar by remember { mutableStateOf(false) }
 
-    Column() {
+    Column {
         Card(shape = RoundedCornerShape(30.dp,30.dp,0.dp,0.dp),
             colors = CardDefaults.cardColors(Color.White)) {
             Row(Modifier.padding(vertical = 16.dp, horizontal = 24.dp)) {
@@ -120,7 +123,7 @@ fun ItemDetailsSection(item: CategoryDummyData?,mainVM: MainVM=viewModel()){
                 Column(Modifier.padding(vertical = 16.dp, horizontal = 24.dp)) {
                     Text("price", color = colorResource(R.color.price_color),
                         fontWeight = FontWeight.Normal, fontSize = 12.sp)
-                    Row() {
+                    Row {
                         Text("$ ${itemPrice*itemCount}", color = colorResource(R.color.price_color),
                             fontWeight = FontWeight.SemiBold, fontSize = 20.sp, modifier = Modifier.weight(1f))
 
@@ -146,8 +149,8 @@ fun ItemDetailsSection(item: CategoryDummyData?,mainVM: MainVM=viewModel()){
                             showSnackbar = false
                         }
                     }
-                    AddToCartBtn(){
-                        mainVM.addToCart()
+                    AddToCartBtn {
+                        vm.addToCart()
 
                         showSnackbar = true
                     }
@@ -196,7 +199,7 @@ fun AddToCartBtn(onAddToBagClick:()->Unit){
 @Composable
 fun ShowStatusSnackbar(){
     Snackbar(shape = RoundedCornerShape(24.dp), contentColor = colorResource(R.color.price_color), containerColor = Color.White) {
-        Row() {
+        Row {
             Text("Item Added To Cart Successfully")
             Icon(Icons.Default.CheckCircle, contentDescription = "added successfully", tint = colorResource(R.color.primary))
         }

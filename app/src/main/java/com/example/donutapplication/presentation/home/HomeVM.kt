@@ -2,16 +2,30 @@ package com.example.donutapplication.presentation.home
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.donutapplication.R
-import com.example.donutapplication.data.CategoryDummyData
-import com.example.donutapplication.data.donutsDummyDataList
-import com.example.donutapplication.data.drinksDummyDataList
-import com.example.donutapplication.data.icedDrinksDummyDataList
+import com.example.donutapplication.presentation.common.SharedPrefCart
+import com.example.donutapplication.presentation.dummy_data.CategoryDummyData
+import com.example.donutapplication.presentation.dummy_data.donutsDummyDataList
+import com.example.donutapplication.presentation.dummy_data.drinksDummyDataList
+import com.example.donutapplication.presentation.dummy_data.icedDrinksDummyDataList
 import com.example.donutapplication.presentation.details.DetailsActivity
 
-class HomeVM : ViewModel() {
+class HomeVM(
+    private val sharedPrefCart: SharedPrefCart
+) : ViewModel() {
+
+
+    private var _itemsInCart by mutableStateOf( sharedPrefCart.cartItems)
+    val itemsCart = derivedStateOf { _itemsInCart }
+
+    fun refreshItemsInCart(){
+        _itemsInCart = sharedPrefCart.cartItems
+    }
+
 
 
     private fun getDrinksData(): List<CategoryDummyData>{

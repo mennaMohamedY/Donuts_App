@@ -22,15 +22,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddShoppingCart
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardControlKey
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,21 +51,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.donutapplication.MainVM
 import com.example.donutapplication.R
-import com.example.donutapplication.data.CategoryDummyData
-import com.example.donutapplication.data.categoriesDummyList
-import com.example.donutapplication.data.featuredDummyList
+import com.example.donutapplication.presentation.common.CartHoneVMFactory
+import com.example.donutapplication.presentation.dummy_data.CategoryDummyData
+import com.example.donutapplication.presentation.dummy_data.categoriesDummyList
+import com.example.donutapplication.presentation.dummy_data.dummyLocationList
+import com.example.donutapplication.presentation.dummy_data.featuredDummyList
 import com.example.donutapplication.presentation.login.TabDesign
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomePage(modifier: Modifier, vm : HomeVM = viewModel(),mainVM: MainVM = viewModel() ){
-    val itemsInCart = mainVM.getCartItems()
-    Log.e("addToCart","home page get items in cart ${itemsInCart}")
+fun HomePage(modifier: Modifier ){
+    val vm : HomeVM = viewModel(
+        factory = CartHoneVMFactory(LocalContext.current)
+    )
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        vm.refreshItemsInCart()
+    }
+
+    val itemsInCart = vm.itemsCart.value
+
     val selectedCategoryTabState = rememberPagerState(
         pageCount = {categoriesDummyList.size}
     )
@@ -107,18 +123,39 @@ fun HomePage(modifier: Modifier, vm : HomeVM = viewModel(),mainVM: MainVM = view
 
 @Composable
 fun LocationAndCart(itemsInCart: Int){
+    var isDropDownExpanded by remember { mutableStateOf(false) }
+    var menuSelectedItem by remember { mutableStateOf(dummyLocationList[1]) }
     Row(Modifier.padding(24.dp,12.dp,24.dp,10.dp).fillMaxWidth()) {
 
         Box(Modifier.padding(vertical = 12.dp, horizontal = 3.dp).weight(1f),
             contentAlignment = Alignment.CenterStart){
             Card(shape = RoundedCornerShape(32.dp), elevation = CardDefaults.cardElevation(2.dp),
-                colors = CardDefaults.cardColors(Color.White)) {
+                colors = CardDefaults.cardColors(Color.White), onClick = {
+                    isDropDownExpanded = true
+                }) {
                 Row(modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Location Icon"
                     , tint = colorResource(R.color.primary))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Cairo, Egypt", fontSize = 12.sp)
+                    Text(text = menuSelectedItem, fontSize = 12.sp)
+                    Icon(if (!isDropDownExpanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardControlKey, contentDescription = "dropDown",
+                        tint = colorResource(R.color.price_color), modifier = Modifier.padding(2.dp))
+                }
+                DropdownMenu(
+                    expanded = isDropDownExpanded,
+                    onDismissRequest = { isDropDownExpanded = false }
+                ) {
+                    dummyLocationList.forEachIndexed { _, string ->
+                        DropdownMenuItem(
+                            text = { Text(string) },
+                            onClick = {
+                                isDropDownExpanded = false
+                                menuSelectedItem = string
+
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -130,20 +167,22 @@ fun LocationAndCart(itemsInCart: Int){
 }
 @Composable
 fun CardWithImage(icon: ImageVector, iconCol:Int, showNotificationBage: Boolean= false,itemsInCart:Int=0, onItemClick:()->Unit){
-    Box(contentAlignment = Alignment.CenterEnd){
+    Box(contentAlignment = if(showNotificationBage) Alignment.BottomStart else Alignment.Center){
         Card(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp).clickable{
             onItemClick()
         },shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
             colors = CardDefaults.cardColors(Color.White)) {
             BadgedBox(
-                badge = {
+                badge= {
                     if (showNotificationBage){
-                        Text("${itemsInCart}")
+                        Badge(modifier = Modifier.padding(1.dp)) {
+                            Text("$itemsInCart", fontSize = 7.sp)
+                        }
                     }
                 }
             ) {
                 Icon(imageVector = icon,"shopping cart",
-                    tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp))
+                    tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp))
 
             }
         }

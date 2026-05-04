@@ -18,12 +18,26 @@ class LoginVM : ViewModel() {
     private val _passwordError = mutableStateOf<String?>(null)
     val passwordError = derivedStateOf { _passwordError.value }
 
+    private var _confirmedPassword = mutableStateOf("confirm password")
+    val confirmPassword = derivedStateOf { _confirmedPassword.value }
+    private val _confirmPasswordError = mutableStateOf<String?>(null)
+    val confirmPasswordError = derivedStateOf { _confirmPasswordError.value }
 
+
+    fun clearErrors(){
+        _emailError.value =null
+        _passwordError.value = null
+        _confirmPasswordError.value= null
+    }
     fun setEmail(newEmail:String){
         _email.value = newEmail
     }
     fun setPassword(newPass:String){
         _password.value = newPass
+    }
+
+    fun setConfirmPassword(pass:String){
+        _confirmedPassword.value = pass
     }
 
 
@@ -52,10 +66,27 @@ class LoginVM : ViewModel() {
         return _passwordError.value == null
     }
 
+    private fun validateConfirmPassword(): Boolean{
+        val value = _confirmedPassword.value
+        _confirmPasswordError.value = when {
+            value.isEmpty()   -> "Password cannot be empty"
+            value != _password.value -> "Password mismatch"
+            else -> null
+        }
+        return _confirmPasswordError.value == null
+    }
+
     fun signIn(): Boolean{
         val validMail = validateEmail()
         val validPass = validatePassword()
         return validMail && validPass
+    }
+
+    fun signUp(): Boolean{
+        val validMail = validateEmail()
+        val validPass = validatePassword()
+        val validConfirmPass = validateConfirmPassword()
+        return validMail && validPass && validConfirmPass
     }
 
     fun signInViaMeta(mthodID:Int){

@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -30,17 +29,14 @@ class MainActivity : ComponentActivity() {
 fun SetNavGraph(){
     val navController = rememberNavController()
 
-    val mainVM: MainVM = viewModel()
     NavHost(navController,"LoginScreen") {
-//        composable("LoginScreen") {
-//
-//            LoginScreen(navigateToMain = {
-//                navController.navigate("LoginScreen/homeScreen")
-//            })
-//        }
-
-        //LoginScreen/homeScreen
         composable("LoginScreen") {
+            LoginScreen(navigateToMain = {
+                navController.navigate("LoginScreen/homeScreen")
+            })
+        }
+
+        composable("LoginScreen/homeScreen") {
             HomeScreen()
         }
     }

@@ -1,4 +1,4 @@
-package com.example.donutapplication.data
+package com.example.donutapplication.presentation.dummy_data
 
 import com.example.donutapplication.R
 
