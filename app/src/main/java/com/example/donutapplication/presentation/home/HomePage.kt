@@ -159,22 +159,24 @@ fun LocationAndCart(itemsInCart: Int){
                 }
             }
         }
-        CardWithImage(Icons.Default.AddShoppingCart  ,R.color.primary,true, itemsInCart){
+        NotificationCardWithImage(Icons.Default.AddShoppingCart  ,R.color.primary, itemsInCart){
+
+//        CardWithImage(Icons.Default.AddShoppingCart  ,R.color.primary,true, itemsInCart){
             //navigate to cart page
         }
 
     }
 }
 @Composable
-fun CardWithImage(icon: ImageVector, iconCol:Int, showNotificationBage: Boolean= false,itemsInCart:Int=0, onItemClick:()->Unit){
-    Box(contentAlignment = if(showNotificationBage) Alignment.BottomStart else Alignment.Center){
+fun CardWithImage(icon: ImageVector, iconCol:Int, showNotificationPage: Boolean= false, itemsInCart:Int=0, onItemClick:()->Unit){
+    Box(contentAlignment = if(showNotificationPage) Alignment.BottomStart else Alignment.Center){
         Card(modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp).clickable{
             onItemClick()
         },shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
             colors = CardDefaults.cardColors(Color.White)) {
             BadgedBox(
                 badge= {
-                    if (showNotificationBage){
+                    if (showNotificationPage){
                         Badge(modifier = Modifier.padding(1.dp)) {
                             Text("$itemsInCart", fontSize = 7.sp)
                         }
@@ -187,6 +189,28 @@ fun CardWithImage(icon: ImageVector, iconCol:Int, showNotificationBage: Boolean=
             }
         }
     }
+}
+
+@Composable
+fun NotificationCardWithImage(icon: ImageVector, iconCol:Int, itemsInCart:Int=0, onItemClick:()->Unit){
+    BadgedBox(
+        badge = {
+            Badge(modifier = Modifier.padding(1.dp)) {
+                Text("$itemsInCart", fontSize = 7.sp)
+            }
+        }
+    ) {
+        Box(contentAlignment = Alignment.BottomStart ){
+            Card(modifier = Modifier.padding(vertical = 1.dp, horizontal = 1.dp).clickable{
+                onItemClick()
+            },shape = RoundedCornerShape(12.dp), elevation = CardDefaults.cardElevation(2.dp),
+                colors = CardDefaults.cardColors(Color.White)) {
+                Icon(imageVector = icon,"shopping cart",
+                    tint = colorResource(iconCol), modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp))
+            }
+        }
+    }
+
 }
 
 @Composable
